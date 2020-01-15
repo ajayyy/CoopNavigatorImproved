@@ -125,17 +125,27 @@ async function preloadJobs() {
     // Start scraping for the details of every job.
     let rows: NodeListOf<HTMLTableRowElement> = getJobList();
 
+    // Remove all old links
     for (const row of rows) {
         let jobNumberElement: HTMLTableDataCellElement = <HTMLTableDataCellElement> row.querySelector("td[headers~='CoopJobNumber'] > a");
 
-        // Remove old link
-        jobNumberElement.removeAttribute("href");
-        jobNumberElement.classList.add("coop-navigator-improved-job-link");
+        let clickElements: Array<HTMLTableDataCellElement> = [];
+        clickElements.push(<HTMLTableDataCellElement> row.querySelector("td[headers~='CoopJobNumber'] > a"));
+        clickElements.push(<HTMLTableDataCellElement> row.querySelector("td[headers~='JobTitle'] > a"));
 
-        // If this is clicked, load it right away
-        jobNumberElement.addEventListener("click", preloadIframeRightNow);
+        for (const element of clickElements) {
+            if (element !== null) {
+                // Remove old link
+                element.removeAttribute("href");
+                element.classList.add("coop-navigator-improved-job-link");
+
+                // If this is clicked, load it right away
+                element.addEventListener("click", preloadIframeRightNow);
+            }
+        }
     }
-            
+
+    // Start preloading iframes
     for (const row of rows) {
         addPreloadIframe(row);
 
@@ -169,8 +179,16 @@ function addPreloadIframe(row: HTMLTableRowElement, hidden: boolean = true): voi
     // Make sure it hasn't already been created
     if (document.getElementById(id) !== null) return;
 
+    // The elements that can open an Iframe
+    let clickElements: Array<HTMLTableDataCellElement> = [jobNumberElement];
+    clickElements.push(<HTMLTableDataCellElement> row.querySelector("td[headers~='JobTitle'] > a"));
+
     // Remove the old listener
-    jobNumberElement.removeEventListener("click", preloadIframeRightNow);
+    for (const element of clickElements) {
+        if (element !== null) {
+            element.removeEventListener("click", preloadIframeRightNow);
+        }
+    }
 
     // Replace this link with a link to open a hidden Iframe
     let iframe: HTMLIFrameElement = document.createElement("iframe");
@@ -185,13 +203,17 @@ function addPreloadIframe(row: HTMLTableRowElement, hidden: boolean = true): voi
     row.parentElement.insertBefore(iframe, jobNumberElement.parentElement.parentElement.nextElementSibling);
 
     // Add listener to make the Iframe visible
-    jobNumberElement.addEventListener("click", (e) => {
-        if (iframe.classList.contains("hidden")) {
-            iframe.classList.remove("hidden");
-        } else {
-            iframe.classList.add("hidden");
+    for (const element of clickElements) {
+        if (element !== null) {
+            element.addEventListener("click", (e) => {
+                if (iframe.classList.contains("hidden")) {
+                    iframe.classList.remove("hidden");
+                } else {
+                    iframe.classList.add("hidden");
+                }
+            });
         }
-    });
+    }
 }
 
 async function waitForLoadingIndicator() {
