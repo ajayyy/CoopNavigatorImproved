@@ -11,7 +11,7 @@ interface WaitCondition {
 }
 
 // Function that can be used to wait for a condition before returning
-async function wait(condition: WaitCondition, timeout = 15000, check = 100): Promise<boolean | Error> { 
+async function wait(condition: WaitCondition, timeout = 30000, check = 100): Promise<boolean | Error> { 
     return await new Promise((resolve, reject) => {
         setTimeout(() => reject(new Error("TIMEOUT")), timeout);
 

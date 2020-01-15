@@ -20,3 +20,8 @@
 
     margin: 10px;
 }
+
+.coop-navigator-improved-job-view {
+    width: calc(100vw - 212px);
+    height: 800px;
+}

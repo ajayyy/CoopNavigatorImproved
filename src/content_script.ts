@@ -3,13 +3,7 @@ import * as Utils from "./utils";
 chrome.runtime.onMessage.addListener(function(request: Utils.ChromeMessage, sender, sendResponse: CallableFunction) {
     switch(request.message) {
         case "startScrape":
-            // Start scraping for the details of every job.
-            let rows: NodeListOf<HTMLTableRowElement> = getJobList();
-            
-            for (const row of rows) {
-                console.log(row.querySelector("td[headers~='CoopJobNumber'] > a").getAttribute("href"));
-            }
-            
+            preloadJobs();
             break;
     }
 });
@@ -117,6 +111,43 @@ async function goToJobNumber() {
     // Remove two spaces before the apply button
     newApplyButtonContainer.previousElementSibling.classList.add("hidden");
     newApplyButtonContainer.previousElementSibling.previousElementSibling.classList.add("hidden");
+}
+
+/**
+ * Will preload all of the jobs on the current page in hidden Iframes.
+ */
+async function preloadJobs() {
+    // Start scraping for the details of every job.
+    let rows: NodeListOf<HTMLTableRowElement> = getJobList();
+            
+    for (const row of rows) {
+        let jobNumberElement: HTMLTableDataCellElement = <HTMLTableDataCellElement> row.querySelector("td[headers~='CoopJobNumber'] > a");
+        console.log(row.querySelector("td[headers~='CoopJobNumber'] > a").getAttribute("href"));
+
+        // Replace this link with a link to open a hidden Iframe
+        let iframe: HTMLIFrameElement = document.createElement("iframe");
+        iframe.id = "coop-navigator-improved-job-" + jobNumberElement.innerText;
+        iframe.setAttribute("src", document.URL + "#jobNumber=" + jobNumberElement.innerText);
+        iframe.classList.add("hidden", "coop-navigator-improved-job-view");
+
+        // Add the iframe to the document
+        row.parentElement.insertBefore(iframe, jobNumberElement.parentElement.parentElement.nextElementSibling);
+
+        // Add open listener
+        jobNumberElement.removeAttribute("href");
+        jobNumberElement.addEventListener("click", () => {
+            if (iframe.classList.contains("hidden")) {
+                iframe.classList.remove("hidden");
+            } else {
+                iframe.classList.add("hidden");
+            }
+        });
+
+        // To give it time to load, add a little delay
+        await new Promise((resolve, reject) => {
+            setTimeout(resolve, 2500);
+        });
+    }
 }
 
 async function waitForLoadingIndicator() {
