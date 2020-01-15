@@ -42,23 +42,46 @@ async function goToJobNumber() {
 
     // Find and move the description
     //TODO: Support French
-    let descriptionContainer = (): HTMLDivElement => <HTMLDivElement> document.querySelector("[for='ctl00_mainContainer_uxTabs_ctl12_uxInfoDescriptionEn']").parentElement;
-
+    let descriptionContainerFunction = (): HTMLDivElement => <HTMLDivElement> document.querySelector("[for='ctl00_mainContainer_uxTabs_ctl12_uxInfoDescriptionEn']").parentElement;
     // Wait for it to load
-    await Utils.wait(() => descriptionContainer() !== null);
-    descriptionContainer().classList.add("hidden");
+    await Utils.wait(() => descriptionContainerFunction() !== null);
+
+    let descriptionContainer: HTMLDivElement = descriptionContainerFunction();
+
+    // Wait for the description iframe to reload
+    let descriptionIframeFunction = (): HTMLIFrameElement => <HTMLIFrameElement> descriptionContainer.querySelector("#ctl00_mainContainer_uxTabs_ctl12_uxInfoDescriptionEn_ifr");
+    // Wait for it to load
+    await Utils.wait(() => descriptionIframeFunction() !== null && descriptionIframeFunction().contentWindow.document.body.children.length > 0);
+    let descriptionIframe: HTMLIFrameElement = descriptionIframeFunction();
+
+    descriptionContainer.classList.add("hidden");
 
     // Hide French description
     let frenchDescriptionContainer: HTMLDivElement = <HTMLDivElement> document.querySelector("[for='ctl00_mainContainer_uxTabs_ctl12_uxInfoDescriptionFr']").parentElement;
     frenchDescriptionContainer.classList.add("hidden");
 
     // Clone the description to a different location
-    let newDescription: HTMLDivElement = <HTMLDivElement> descriptionContainer().cloneNode(true);
+    let newDescription: HTMLDivElement = <HTMLDivElement> descriptionContainer.cloneNode(true);
     newDescription.classList.add("moved-description");
     newDescription.classList.remove("hidden");
 
     let jobNumberElement: HTMLDivElement = <HTMLDivElement> document.getElementById("ctl00_mainContainer_uxTabs_ctl12_uxInfoCoopJobGroup");
     jobNumberElement.parentElement.insertBefore(newDescription, jobNumberElement);
+
+    // Copy over Iframe info
+    let newDescriptionIframe = (): HTMLIFrameElement => <HTMLIFrameElement> newDescription.querySelector("#ctl00_mainContainer_uxTabs_ctl12_uxInfoDescriptionEn_ifr");
+    await Utils.wait(() => newDescriptionIframe().contentWindow !== null && newDescriptionIframe().contentWindow.document.body !== undefined);
+    newDescriptionIframe().contentWindow.document.body.innerHTML = descriptionIframe.contentWindow.document.body.innerHTML;
+
+    // Remove Iframe border
+    newDescriptionIframe().setAttribute("frameBorder", "0");
+    (<HTMLDivElement> newDescription.querySelector("#mce_5")).style.removeProperty("border-width");
+
+    // Make sure it does not get reset
+    Utils.wait(() => newDescriptionIframe().contentWindow.document.body.children.length == 0).then((): void => {
+        // Put the info back
+        newDescriptionIframe().contentWindow.document.body.innerHTML = descriptionIframe.contentWindow.document.body.innerHTML;
+    });
 
     // Hide "English Description" label
     let descriptionLabel = newDescription.querySelector("[for='ctl00_mainContainer_uxTabs_ctl12_uxInfoDescriptionEn']");
@@ -73,6 +96,23 @@ async function goToJobNumber() {
     // Change left margin on main div
     let mainDiv: HTMLDivElement = <HTMLDivElement> document.getElementById("mainDiv");
     mainDiv.style.marginLeft = "0";
+
+    // Create new Apply Button
+    let newApplyButtonContainer: HTMLDivElement = document.createElement("div");
+    newApplyButtonContainer.id = "new-apply-button";
+    newApplyButtonContainer.classList.add("InputGroup");
+    let newApplyButton: HTMLLabelElement = document.createElement("label");
+    newApplyButton.setAttribute("for", "newApplyButton");
+    newApplyButton.classList.add("InputLabel", "new-apply-button");
+    newApplyButton.innerText = "Apply";
+    newApplyButtonContainer.appendChild(newApplyButton);
+
+    let oldApplyButton: HTMLDivElement = <HTMLDivElement> document.getElementById("ctl00_contextContainer_uxApplyJob");
+    newApplyButton.addEventListener("click", oldApplyButton.click);
+
+    // Add apply button to page
+    let jobQualificationsTitle: HTMLDivElement = <HTMLDivElement> document.getElementById("ctl00_mainContainer_uxTabs_ctl12_uxInfoQualification");
+    jobQualificationsTitle.parentElement.insertBefore(newApplyButtonContainer, jobQualificationsTitle);
 }
 
 async function waitForLoadingIndicator() {

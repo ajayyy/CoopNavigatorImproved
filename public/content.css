@@ -12,3 +12,11 @@
     width: 600px !important;
     height: 510px !important;
 }
+
+.new-apply-button {
+    font-size: 24px;
+
+    cursor: pointer;
+
+    margin: 10px;
+}
