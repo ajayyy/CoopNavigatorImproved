@@ -113,6 +113,10 @@ async function goToJobNumber() {
     // Add apply button to page
     let jobQualificationsTitle: HTMLDivElement = <HTMLDivElement> document.getElementById("ctl00_mainContainer_uxTabs_ctl12_uxInfoQualification");
     jobQualificationsTitle.parentElement.insertBefore(newApplyButtonContainer, jobQualificationsTitle);
+
+    // Remove two spaces before the apply button
+    newApplyButtonContainer.previousElementSibling.classList.add("hidden");
+    newApplyButtonContainer.previousElementSibling.previousElementSibling.classList.add("hidden");
 }
 
 async function waitForLoadingIndicator() {
