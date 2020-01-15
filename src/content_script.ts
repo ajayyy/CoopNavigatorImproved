@@ -119,35 +119,77 @@ async function goToJobNumber() {
 async function preloadJobs() {
     // Start scraping for the details of every job.
     let rows: NodeListOf<HTMLTableRowElement> = getJobList();
+
+    for (const row of rows) {
+        let jobNumberElement: HTMLTableDataCellElement = <HTMLTableDataCellElement> row.querySelector("td[headers~='CoopJobNumber'] > a");
+
+        // Remove old link
+        jobNumberElement.removeAttribute("href");
+
+        // If this is clicked, load it right away
+        jobNumberElement.addEventListener("click", preloadIframeRightNow);
+    }
             
     for (const row of rows) {
         let jobNumberElement: HTMLTableDataCellElement = <HTMLTableDataCellElement> row.querySelector("td[headers~='CoopJobNumber'] > a");
-        console.log(row.querySelector("td[headers~='CoopJobNumber'] > a").getAttribute("href"));
 
-        // Replace this link with a link to open a hidden Iframe
-        let iframe: HTMLIFrameElement = document.createElement("iframe");
-        iframe.id = "coop-navigator-improved-job-" + jobNumberElement.innerText;
-        iframe.setAttribute("src", document.URL + "#jobNumber=" + jobNumberElement.innerText);
-        iframe.classList.add("hidden", "coop-navigator-improved-job-view");
-
-        // Add the iframe to the document
-        row.parentElement.insertBefore(iframe, jobNumberElement.parentElement.parentElement.nextElementSibling);
-
-        // Add open listener
-        jobNumberElement.removeAttribute("href");
-        jobNumberElement.addEventListener("click", () => {
-            if (iframe.classList.contains("hidden")) {
-                iframe.classList.remove("hidden");
-            } else {
-                iframe.classList.add("hidden");
-            }
-        });
+        addPreloadIframe(row, jobNumberElement);
 
         // To give it time to load, add a little delay
         await new Promise((resolve, reject) => {
             setTimeout(resolve, 2500);
         });
     }
+}
+
+/**
+ * Added to a click listener to be able to add an iframe on click
+ * 
+ * @param ev 
+ */
+function preloadIframeRightNow(ev: MouseEvent) {
+    console.log("preloading two things");
+    console.log(this.parentElement.parentElement)
+    console.log(this)
+
+    // Get the table by taking the far up parent
+    addPreloadIframe(this.parentElement.parentElement, this, false);
+}
+
+/**
+ * Adds the iframe with the preloaded job to the given row
+ *
+ * @param row 
+ * @param jobNumberElement 
+ */
+function addPreloadIframe(row: HTMLTableRowElement, jobNumberElement: HTMLTableDataCellElement, hidden: boolean = true): void {
+    let id: string = "coop-navigator-improved-job-" + jobNumberElement.innerText;
+
+    // Make sure it hasn't already been created
+    if (document.getElementById(id) !== null) return;
+
+    // Remove the old listener
+    jobNumberElement.removeEventListener("click", preloadIframeRightNow);
+
+    // Replace this link with a link to open a hidden Iframe
+    let iframe: HTMLIFrameElement = document.createElement("iframe");
+    iframe.id = id;
+    iframe.setAttribute("src", document.URL + "#jobNumber=" + jobNumberElement.innerText);
+    iframe.classList.add("coop-navigator-improved-job-view");
+
+    if (hidden) iframe.classList.add("hidden");
+
+    // Add the iframe to the document
+    row.parentElement.insertBefore(iframe, jobNumberElement.parentElement.parentElement.nextElementSibling);
+
+    // Add listener to make the Iframe visible
+    jobNumberElement.addEventListener("click", (e) => {
+        if (iframe.classList.contains("hidden")) {
+            iframe.classList.remove("hidden");
+        } else {
+            iframe.classList.add("hidden");
+        }
+    });
 }
 
 async function waitForLoadingIndicator() {
