@@ -1,0 +1,27 @@
+{
+  "manifest_version": 2,
+
+  "name": "Coop Navigator Improved (uOttawa)",
+  "description": "Fixes to make the uOttawa Coop Navigator easier to use",
+  "version": "0.1",
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+  "content_scripts": [
+      {
+          "matches": ["https://nav-coop-sso.uottawa.ca/*"],
+          "js": [
+            "js/utils.js",
+            "js/vendor.js", 
+            "js/content_script.js"]
+      }
+  ],
+  "background": {
+    "scripts": ["js/vendor.js", "js/background.js"]
+  },
+  "permissions": [
+    "storage",
+    "activeTab"
+  ]
+}
