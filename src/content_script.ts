@@ -127,8 +127,6 @@ async function preloadJobs() {
 
     // Remove all old links
     for (const row of rows) {
-        let jobNumberElement: HTMLTableDataCellElement = <HTMLTableDataCellElement> row.querySelector("td[headers~='CoopJobNumber'] > a");
-
         let clickElements: Array<HTMLTableDataCellElement> = [];
         clickElements.push(<HTMLTableDataCellElement> row.querySelector("td[headers~='CoopJobNumber'] > a"));
         clickElements.push(<HTMLTableDataCellElement> row.querySelector("td[headers~='JobTitle'] > a"));
@@ -151,7 +149,7 @@ async function preloadJobs() {
 
         // To give it time to load, add a little delay
         await new Promise((resolve, reject) => {
-            setTimeout(resolve, 2500);
+            setTimeout(resolve, 2000);
         });
     }
 }
