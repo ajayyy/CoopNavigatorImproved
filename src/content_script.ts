@@ -104,11 +104,11 @@ async function goToJobNumber() {
     let newApplyButton: HTMLLabelElement = document.createElement("label");
     newApplyButton.setAttribute("for", "newApplyButton");
     newApplyButton.classList.add("InputLabel", "new-apply-button");
-    newApplyButton.innerText = "Apply";
     newApplyButtonContainer.appendChild(newApplyButton);
 
-    let oldApplyButton: HTMLDivElement = <HTMLDivElement> document.getElementById("ctl00_contextContainer_uxApplyJob");
+    let oldApplyButton: HTMLLinkElement = <HTMLLinkElement> document.getElementById("ctl00_contextContainer_uxApplyJob");
     newApplyButton.addEventListener("click", oldApplyButton.click);
+    newApplyButton.innerText = oldApplyButton.innerText;
 
     // Add apply button to page
     let jobQualificationsTitle: HTMLDivElement = <HTMLDivElement> document.getElementById("ctl00_mainContainer_uxTabs_ctl12_uxInfoQualification");
