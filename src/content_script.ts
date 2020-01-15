@@ -33,6 +33,49 @@ async function goToJobNumber() {
     jobNumberInput.value = jobNumber;
     searchButton.click();
 
+    await waitForLoadingIndicator();
+
+    let jobLink: HTMLLinkElement = getJobLink(getJobList()[0]);
+    jobLink.click();
+
+    await waitForLoadingIndicator();
+
+    // Find and move the description
+    //TODO: Support French
+    let descriptionContainer = (): HTMLDivElement => <HTMLDivElement> document.querySelector("[for='ctl00_mainContainer_uxTabs_ctl12_uxInfoDescriptionEn']").parentElement;
+
+    // Wait for it to load
+    await Utils.wait(() => descriptionContainer() !== null);
+    descriptionContainer().classList.add("hidden");
+
+    // Hide French description
+    let frenchDescriptionContainer: HTMLDivElement = <HTMLDivElement> document.querySelector("[for='ctl00_mainContainer_uxTabs_ctl12_uxInfoDescriptionFr']").parentElement;
+    frenchDescriptionContainer.classList.add("hidden");
+
+    // Clone the description to a different location
+    let newDescription: HTMLDivElement = <HTMLDivElement> descriptionContainer().cloneNode(true);
+    newDescription.classList.add("moved-description");
+    newDescription.classList.remove("hidden");
+
+    let jobNumberElement: HTMLDivElement = <HTMLDivElement> document.getElementById("ctl00_mainContainer_uxTabs_ctl12_uxInfoCoopJobGroup");
+    jobNumberElement.parentElement.insertBefore(newDescription, jobNumberElement);
+
+    // Hide "English Description" label
+    let descriptionLabel = newDescription.querySelector("[for='ctl00_mainContainer_uxTabs_ctl12_uxInfoDescriptionEn']");
+    descriptionLabel.classList.add("hidden");
+
+    // Hide tabs, banner, sidebar and job title
+    document.getElementById("ctl00_mainContainer_uxTabs_TabControl").classList.add("hidden");
+    document.getElementById("menuDiv").parentElement.classList.add("hidden");
+    document.getElementById("contextDiv").classList.add("hidden");
+    document.getElementById("ctl00_mainContainer_uxPageTitle").parentElement.classList.add("hidden");
+
+    // Change left margin on main div
+    let mainDiv: HTMLDivElement = <HTMLDivElement> document.getElementById("mainDiv");
+    mainDiv.style.marginLeft = "0";
+}
+
+async function waitForLoadingIndicator() {
     let loadingStatus: HTMLDivElement = <HTMLDivElement> document.getElementById("ctl00_mainContainer_UpdateProgress1_uxUpdateProgress");
 
     // Wait for the loading status to appear if required
@@ -42,9 +85,6 @@ async function goToJobNumber() {
 
     // Wait for the loading status to disappear
     await Utils.wait(() => loadingStatus.style.display == "none");
-
-    let jobLink: HTMLLinkElement = getJobLink(getJobList()[0]);
-    jobLink.click();
 }
 
 /**

@@ -1,0 +1,14 @@
+.hidden {
+    display: none !important;
+}
+
+.moved-description.InputGroup {
+    float: right;
+    position: absolute;
+    right: 10px;
+}
+
+.moved-description.InputGroup > #mce_4, #ctl00_mainContainer_uxTabs_ctl12_uxInfoDescriptionEn_ifr {
+    width: 600px !important;
+    height: 510px !important;
+}

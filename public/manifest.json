@@ -13,7 +13,11 @@
           "matches": ["https://nav-coop-sso.uottawa.ca/*"],
           "js": [
             "js/vendor.js", 
-            "js/content_script.js"]
+            "js/content_script.js"
+          ],
+          "css": [
+            "content.css"
+          ]
       }
   ],
   "background": {
