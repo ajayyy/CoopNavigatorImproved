@@ -104,7 +104,7 @@ async function goToJobNumber() {
     // Wait for apply button to be ready
     let oldApplyButtonFunction = (): HTMLLinkElement => <HTMLLinkElement> document.getElementById("ctl00_contextContainer_uxApplyJob");
     await Utils.wait(() => oldApplyButtonFunction() !== null);
-    
+
     let oldApplyButton: HTMLLinkElement = oldApplyButtonFunction();
     newApplyButton.addEventListener("click", oldApplyButton.click);
     newApplyButton.innerText = oldApplyButton.innerText;
@@ -137,9 +137,7 @@ async function preloadJobs() {
     }
             
     for (const row of rows) {
-        let jobNumberElement: HTMLTableDataCellElement = <HTMLTableDataCellElement> row.querySelector("td[headers~='CoopJobNumber'] > a");
-
-        addPreloadIframe(row, jobNumberElement);
+        addPreloadIframe(row);
 
         // To give it time to load, add a little delay
         await new Promise((resolve, reject) => {
@@ -154,12 +152,8 @@ async function preloadJobs() {
  * @param ev 
  */
 function preloadIframeRightNow(ev: MouseEvent) {
-    console.log("preloading two things");
-    console.log(this.parentElement.parentElement)
-    console.log(this)
-
     // Get the table by taking the far up parent
-    addPreloadIframe(this.parentElement.parentElement, this, false);
+    addPreloadIframe(this.parentElement.parentElement, false);
 }
 
 /**
@@ -168,7 +162,8 @@ function preloadIframeRightNow(ev: MouseEvent) {
  * @param row 
  * @param jobNumberElement 
  */
-function addPreloadIframe(row: HTMLTableRowElement, jobNumberElement: HTMLTableDataCellElement, hidden: boolean = true): void {
+function addPreloadIframe(row: HTMLTableRowElement, hidden: boolean = true): void {
+    let jobNumberElement: HTMLTableDataCellElement = row.querySelector("td[headers~='CoopJobNumber'] > a");
     let id: string = "coop-navigator-improved-job-" + jobNumberElement.innerText;
 
     // Make sure it hasn't already been created
