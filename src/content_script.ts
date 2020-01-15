@@ -100,7 +100,12 @@ async function goToJobNumber() {
     newApplyButton.classList.add("InputLabel", "new-apply-button");
     newApplyButtonContainer.appendChild(newApplyButton);
 
-    let oldApplyButton: HTMLLinkElement = <HTMLLinkElement> document.getElementById("ctl00_contextContainer_uxApplyJob");
+    
+    // Wait for apply button to be ready
+    let oldApplyButtonFunction = (): HTMLLinkElement => <HTMLLinkElement> document.getElementById("ctl00_contextContainer_uxApplyJob");
+    await Utils.wait(() => oldApplyButtonFunction() !== null);
+    
+    let oldApplyButton: HTMLLinkElement = oldApplyButtonFunction();
     newApplyButton.addEventListener("click", oldApplyButton.click);
     newApplyButton.innerText = oldApplyButton.innerText;
 
@@ -125,6 +130,7 @@ async function preloadJobs() {
 
         // Remove old link
         jobNumberElement.removeAttribute("href");
+        jobNumberElement.classList.add("coop-navigator-improved-job-link");
 
         // If this is clicked, load it right away
         jobNumberElement.addEventListener("click", preloadIframeRightNow);
@@ -175,6 +181,7 @@ function addPreloadIframe(row: HTMLTableRowElement, jobNumberElement: HTMLTableD
     let iframe: HTMLIFrameElement = document.createElement("iframe");
     iframe.id = id;
     iframe.setAttribute("src", document.URL + "#jobNumber=" + jobNumberElement.innerText);
+    iframe.setAttribute("frameborder", "0");
     iframe.classList.add("coop-navigator-improved-job-view");
 
     if (hidden) iframe.classList.add("hidden");
