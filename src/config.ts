@@ -75,7 +75,8 @@ async function setupConfig() {
 }
 
 const defaults = {
-	"extensionEnabled": true
+    "extensionEnabled": true,
+    "installed": false
 }
 
 // Reset config
