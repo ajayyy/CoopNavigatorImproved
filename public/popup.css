@@ -1,0 +1,37 @@
+body {
+    background-color: rgb(63, 63, 63);
+
+    width: 350px;
+}
+
+.hidden {
+    display: none;
+}
+
+h1 {
+    color: rgb(255, 255, 255);
+}
+
+/* From SponsorBlock */
+.option-button {
+    cursor: pointer;
+
+    background-color: #c00000;
+    padding: 10px;
+    color: white;
+    border-radius: 5px;
+    font-size: 14px;
+
+    width: max-content;
+}
+
+.option-button:hover {
+    background-color: #fc0303;
+}
+
+.option-button.disabled {
+    cursor: default;
+
+    background-color: #520000;
+    color: grey;
+}

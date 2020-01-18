@@ -1,0 +1,19 @@
+{
+    "name": {
+        "message": "Coop Navigator Improved",
+        "description": "Name of the extension"
+    },
+    "fullName": {
+        "message": "Coop Navigator Improved for uOttawa",
+        "description": "Longer name of the extension"
+    },
+    "description": {
+        "message": "Fixes to make the uOttawa Coop Navigator easier to use"
+    },
+    "disableExtensionButton": {
+        "message": "Disable Coop Navigator Improved"
+    },
+    "enableExtensionButton": {
+        "message": "Enable Coop Navigator Improved"
+    }
+}
