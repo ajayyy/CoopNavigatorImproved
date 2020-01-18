@@ -1,4 +1,5 @@
 import * as Utils from "./utils";
+import * as Config from "./config";
 
 chrome.runtime.onMessage.addListener(function(request: Utils.ChromeMessage, sender, sendResponse: CallableFunction) {
     switch(request.message) {
@@ -10,13 +11,17 @@ chrome.runtime.onMessage.addListener(function(request: Utils.ChromeMessage, send
 
 
 // Depending on the URL, do different things
-if (window.location.pathname.startsWith("/CoopNav.NET/Job/MaintainJob.aspx")) {
-    if (window.location.hash.startsWith("#jobNumber=")) {
-        goToJobNumber();
-    } else {
-        prepJobPreload();
+Utils.wait(() => Config.config !== undefined, 1000, 10).then((): void => {
+    if (!Config.config.extensionEnabled) return;
+
+    if (window.location.pathname.startsWith("/CoopNav.NET/Job/MaintainJob.aspx")) {
+        if (window.location.hash.startsWith("#jobNumber=")) {
+            goToJobNumber();
+        } else {
+            prepJobPreload();
+        }
     }
-}
+});
 
 /**
  * Goes to a specified job number from window.location.hash
