@@ -40,16 +40,10 @@ async function goToJobNumber() {
 
     await modifyJobsPage();
 
-    // Find requiremens checkboxes to make sure to update the page again when needed
-    let requirementCheckboxRows = <NodeListOf<HTMLTableRowElement>> document.querySelectorAll("#ctl00_mainContainer_uxTabs_ctl12_uxJobRequirement_uxJobRequirementGridView > tbody > tr")
-
-    for (const row of requirementCheckboxRows) {
-        let checkbox = row.querySelector("td > span > input");
-        
-        if (checkbox !== null) {
-            checkbox.addEventListener("click", waitToRemodifyJobsPage);
-        }
-    }
+    // Modify the form again when it refreshes
+    let form = document.getElementById("aspnetForm");
+    // This form uses the change event instead of the submit event
+    form.addEventListener("change", waitToRemodifyJobsPage);
 }
 
 /**
@@ -137,11 +131,7 @@ async function modifyJobsPage() {
     await Utils.wait(() => oldApplyButtonFunction() !== null);
 
     let oldApplyButton: HTMLLinkElement = oldApplyButtonFunction();
-    newApplyButton.addEventListener("click", async function() {
-        oldApplyButton.click();
-
-        waitToRemodifyJobsPage();
-    });
+    newApplyButton.addEventListener("click", oldApplyButton.click);
     newApplyButton.innerText = oldApplyButton.innerText;
 
     // Add apply button to page
@@ -195,7 +185,7 @@ async function setupSubmitButtonListener(awaitLoadingIndicator: boolean = true) 
         // Remove old form event listener
         let form = document.getElementById("aspnetForm");
         form.removeEventListener("submit", jobSearchFormUpdate);
-        
+
         await waitForLoadingIndicator();
 
         preloadJobs();
