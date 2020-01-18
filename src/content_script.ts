@@ -192,6 +192,10 @@ async function setupSubmitButtonListener(awaitLoadingIndicator: boolean = true) 
     let searchButton = <HTMLInputElement> document.querySelector("[name='ctl00$mainContainer$uxTabs$ctl03$uxBasicSearch']");
     
     searchButton.addEventListener("click", async function() {
+        // Remove old form event listener
+        let form = document.getElementById("aspnetForm");
+        form.removeEventListener("submit", jobSearchFormUpdate);
+        
         await waitForLoadingIndicator();
 
         preloadJobs();
