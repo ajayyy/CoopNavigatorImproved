@@ -10,8 +10,12 @@ chrome.runtime.onMessage.addListener(function(request: Utils.ChromeMessage, send
 
 
 // Depending on the URL, do different things
-if (window.location.hash.startsWith("#jobNumber=")) {
-    goToJobNumber();
+if (window.location.pathname.startsWith("/CoopNav.NET/Job/MaintainJob.aspx")) {
+    if (window.location.hash.startsWith("#jobNumber=")) {
+        goToJobNumber();
+    } else {
+        prepJobPreload();
+    }
 }
 
 /**
@@ -147,6 +151,51 @@ async function modifyJobsPage() {
     // Remove two spaces before the apply button
     newApplyButtonContainer.previousElementSibling.classList.add("hidden");
     newApplyButtonContainer.previousElementSibling.previousElementSibling.classList.add("hidden");
+}
+
+/**
+ * Preloads the jbs once the search button has been clicked
+ */
+async function prepJobPreload() {
+    // Add listener to search button
+    let searchButton = () => <HTMLInputElement> document.querySelector("[name='ctl00$mainContainer$uxTabs$ctl03$uxBasicSearch']");
+
+    await Utils.wait(() => searchButton() !== null);
+
+    setupSubmitButtonListener(false);
+
+    // If the form refreshes, set up the button listener again
+    let form = document.getElementById("aspnetForm");
+    form.addEventListener("submit", jobSearchFormUpdate);
+}
+
+/**
+ * Listens to form update event on the search page.
+ * Will call setupSubmitButtonListener()
+ * 
+ * @param e
+ */
+function jobSearchFormUpdate(e: MouseEvent) {
+    setupSubmitButtonListener();
+}
+
+/**
+ * Sets up a listener on the submit button to preload the jobs
+ *
+ * @param awaitLoadingIndicator If false, it will add the listener right away 
+ */
+async function setupSubmitButtonListener(awaitLoadingIndicator: boolean = true) {
+    if (awaitLoadingIndicator) {
+        await waitForLoadingIndicator();
+    }
+
+    let searchButton = <HTMLInputElement> document.querySelector("[name='ctl00$mainContainer$uxTabs$ctl03$uxBasicSearch']");
+    
+    searchButton.addEventListener("click", async function() {
+        await waitForLoadingIndicator();
+
+        preloadJobs();
+    });
 }
 
 /**
