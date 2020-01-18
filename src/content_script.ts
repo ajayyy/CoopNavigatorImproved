@@ -34,6 +34,33 @@ async function goToJobNumber() {
 
     await waitForLoadingIndicator();
 
+    await modifyJobsPage();
+
+    // Find requiremens checkboxes to make sure to update the page again when needed
+    let requirementCheckboxRows = <NodeListOf<HTMLTableRowElement>> document.querySelectorAll("#ctl00_mainContainer_uxTabs_ctl12_uxJobRequirement_uxJobRequirementGridView > tbody > tr")
+
+    for (const row of requirementCheckboxRows) {
+        let checkbox = row.querySelector("td > span > input");
+        
+        if (checkbox !== null) {
+            checkbox.addEventListener("click", waitToRemodifyJobsPage);
+        }
+    }
+}
+
+/**
+ * Modifies the jobs page after waiting for the loading to finish
+ */
+async function waitToRemodifyJobsPage() {
+    await waitForLoadingIndicator();
+
+    modifyJobsPage();
+}
+
+/**
+ * Makes the job page look nice for an iframe
+ */
+async function modifyJobsPage() {
     // Find and move the description
     //TODO: Support French
     let descriptionContainerFunction = (): HTMLDivElement => <HTMLDivElement> document.querySelector("[for='ctl00_mainContainer_uxTabs_ctl12_uxInfoDescriptionEn']").parentElement;
@@ -69,7 +96,8 @@ async function goToJobNumber() {
 
     // Remove Iframe border
     newDescriptionIframe().setAttribute("frameBorder", "0");
-    (<HTMLDivElement> newDescription.querySelector("#mce_5")).style.removeProperty("border-width");
+    (<HTMLDivElement> newDescription.querySelector(":scope > .mce-tinymce.mce-panel > .mce-container-body > .mce-edit-area"))
+                            .style.removeProperty("border-width");
 
     // Make sure it does not get reset
     Utils.wait(() => newDescriptionIframe().contentWindow.document.body.children.length == 0).then((): void => {
@@ -99,7 +127,6 @@ async function goToJobNumber() {
     newApplyButton.setAttribute("for", "newApplyButton");
     newApplyButton.classList.add("InputLabel", "new-apply-button");
     newApplyButtonContainer.appendChild(newApplyButton);
-
     
     // Wait for apply button to be ready
     let oldApplyButtonFunction = (): HTMLLinkElement => <HTMLLinkElement> document.getElementById("ctl00_contextContainer_uxApplyJob");
@@ -107,6 +134,7 @@ async function goToJobNumber() {
 
     let oldApplyButton: HTMLLinkElement = oldApplyButtonFunction();
     newApplyButton.addEventListener("click", oldApplyButton.click);
+    newApplyButton.addEventListener("click", waitToRemodifyJobsPage);
     newApplyButton.innerText = oldApplyButton.innerText;
 
     // Add apply button to page
