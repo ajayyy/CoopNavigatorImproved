@@ -26,5 +26,8 @@
   "permissions": [
     "storage",
     "activeTab"
-  ]
+  ],
+  "icons": {
+    "256": "icon.png"
+  }
 }
