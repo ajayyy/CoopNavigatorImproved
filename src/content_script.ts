@@ -52,7 +52,7 @@ async function goToJobNumber() {
  * Modifies the jobs page after waiting for the loading to finish
  */
 async function waitToRemodifyJobsPage() {
-    await waitForLoadingIndicator();
+    await Utils.wait(() => document.querySelector(".moved-description") === null);
 
     modifyJobsPage();
 }
@@ -133,8 +133,11 @@ async function modifyJobsPage() {
     await Utils.wait(() => oldApplyButtonFunction() !== null);
 
     let oldApplyButton: HTMLLinkElement = oldApplyButtonFunction();
-    newApplyButton.addEventListener("click", oldApplyButton.click);
-    newApplyButton.addEventListener("click", waitToRemodifyJobsPage);
+    newApplyButton.addEventListener("click", async function() {
+        oldApplyButton.click();
+
+        waitToRemodifyJobsPage();
+    });
     newApplyButton.innerText = oldApplyButton.innerText;
 
     // Add apply button to page
