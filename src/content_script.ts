@@ -49,6 +49,7 @@ async function goToJobNumber() {
     let form = document.getElementById("aspnetForm");
     // This form uses the change event instead of the submit event
     form.addEventListener("change", waitToRemodifyJobsPage);
+    form.addEventListener("submit", waitToRemodifyJobsPage);
 }
 
 /**
