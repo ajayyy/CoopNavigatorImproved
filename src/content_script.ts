@@ -136,7 +136,7 @@ async function modifyJobsPage() {
     await Utils.wait(() => oldApplyButtonFunction() !== null);
 
     let oldApplyButton: HTMLLinkElement = oldApplyButtonFunction();
-    newApplyButton.addEventListener("click", oldApplyButton.click);
+    newApplyButton.addEventListener("click", () => oldApplyButton.click());
     newApplyButton.innerText = oldApplyButton.innerText;
 
     // Add apply button to page
