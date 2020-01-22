@@ -194,8 +194,39 @@ async function setupSubmitButtonListener(awaitLoadingIndicator: boolean = true) 
 
         await waitForLoadingIndicator();
 
-        preloadJobs();
+        prepJobsListPreloader();
     });
+}
+
+/**
+ * Calls preloadJobs(), then sets up listeners on form change buttons.
+ */
+async function prepJobsListPreloader() {
+    preloadJobs();
+
+    // Add listeners to the change page buttons
+    let updateButtons: Array<HTMLElement> = [];
+    updateButtons.push(document.querySelector("[name='ctl00$mainContainer$uxTabs$ctl06$ctl00$ctl00$ctl00']"));
+    updateButtons.push(document.querySelector("[name='ctl00$mainContainer$uxTabs$ctl06$ctl00$ctl00$ctl01']"));
+    updateButtons.push(document.querySelector("[name='ctl00$mainContainer$uxTabs$ctl06$ctl00$ctl00$ctl02']"));
+    updateButtons.push(document.querySelector("[name='ctl00$mainContainer$uxTabs$ctl06$ctl00$ctl00$ctl03']"));
+
+    for (const button of updateButtons) {
+        button.addEventListener("click", () => waitToPreloadJobs());
+    }
+
+    // Add listener to jobs per page selector
+    let itemPerPageSelector = <HTMLInputElement> document.querySelector("[name='ctl00$mainContainer$uxTabs$ctl06$ctl00$ctl00$uxPgSz']");
+    itemPerPageSelector.addEventListener("change", () => waitToPreloadJobs());
+}
+
+/**
+ * Waits for the loading indicator before preping to preload jobs
+ */
+async function waitToPreloadJobs() {
+    await waitForLoadingIndicator();
+
+    prepJobsListPreloader();
 }
 
 /**
