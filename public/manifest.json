@@ -3,7 +3,7 @@
   "short_name": "__MSG_name__",
   "name": "__MSG_fullName__",
   "description": "__MSG_description__",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "default_locale": "en",
   "browser_action": {
     "default_icon": "icon.png",
