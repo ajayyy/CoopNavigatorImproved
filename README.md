@@ -2,6 +2,8 @@
 
 Note: **Only supports English**
 
+[Chrome(ium)](https://chrome.google.com/webstore/detail/epjfkhpbgdkbdpcicaenldoebllfjfld)
+
 Features at the current time
 - Job preloading
   - Clicking a job will toggle visibilit of it
