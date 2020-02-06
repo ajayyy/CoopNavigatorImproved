@@ -15,12 +15,20 @@ Features at the current time
 
 # Build Instructions
 
+Clone the repository:
+
 `git clone`
+
+Install the dependencies:
 
 `npm install`
 
+Build or run the extension:
+
 `npm build` to build the extension.
 
-`npm watch` to have build after every change.
+or
+
+`npm watch` to build after every change.
 
 The extension will be found in `dist`
