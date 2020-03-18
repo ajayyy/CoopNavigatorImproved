@@ -6,7 +6,7 @@ Note: **Only supports English**
 
 Features at the current time
 - Job preloading
-  - Clicking a job will toggle visibilit of it
+  - Clicking a job will toggle visibility of it
   - It will appear right below the Job title
 - Modified job page layout
   - The description is on the right in an easier to access location.
